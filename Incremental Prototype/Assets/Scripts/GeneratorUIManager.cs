@@ -12,10 +12,12 @@ public class GeneratorUIManager : MonoBehaviour
     public Button upgradeButton;
     public Button unlockAutoclick;
     public Image fillBar;
+    public Image levelFillBar;
+    public Image autoClickUnlockBar;
+    public Image costBar;
     public TextMeshProUGUI incomeText;
     public TextMeshProUGUI generatorCountText;
     public TextMeshProUGUI upgradeCostText;
-    public TextMeshProUGUI unlockAutoclickText;
     public ParticleSystem multiplierParticles;
     public Mask mask;
     public int index;
@@ -29,6 +31,7 @@ public class GeneratorUIManager : MonoBehaviour
 
     private float multiBuyIndex = 1;
     private float maxBuyIndex;
+    private float previousOwnershipStep = 0;
 
     private void Start()
     {
@@ -36,7 +39,7 @@ public class GeneratorUIManager : MonoBehaviour
         {
             unlockAutoclick.gameObject.SetActive(false);
         }
-        unlockAutoclickText.text = "Unlock Autoclick : " + associatedGenerator.autoclickUnlockCost + " λ";
+        previousOwnershipStep = 0;
     }
 
     private void FixedUpdate()
@@ -53,7 +56,9 @@ public class GeneratorUIManager : MonoBehaviour
                 fillBar.fillAmount = 1;
             }
         }
-    
+
+        autoClickUnlockBar.fillAmount = manager.currency / associatedGenerator.autoclickUnlockCost;
+        costBar.fillAmount = manager.currency / multiBuyCost;
         #endregion
 
         #region CostCalculation
@@ -96,7 +101,7 @@ public class GeneratorUIManager : MonoBehaviour
         }
 
         //max buy toggle
-        if(manager.maxBuyToggle.isOn)
+        /*if(manager.maxBuyToggle.isOn)
         {
             associatedGenerator.maxBuy = true;
         }
@@ -104,7 +109,7 @@ public class GeneratorUIManager : MonoBehaviour
         {
             associatedGenerator.maxBuy = false;
             multiBuyIndex = 1;
-        }
+        }*/
         
         //unlockautoclick button
         if(index == manager.currentGeneratorIndex)
@@ -141,13 +146,13 @@ public class GeneratorUIManager : MonoBehaviour
         }
 
         //genCount
-        generatorCountText.text = "Generators " + associatedGenerator.generatorName + " : " + associatedGenerator.generatorQuantity;
+        generatorCountText.text = associatedGenerator.generatorQuantity + " " + associatedGenerator.generatorName + " generators | " + System.Math.Round(multiBuyCost, 2) + " λ " + "for " + multiBuyIndex +" "  + associatedGenerator.generatorName + generatorString ;
 
         //upgradeCost
-        upgradeCostText.text = "Cost : " + System.Math.Round(multiBuyCost, 2) + " λ" + "\nfor " + multiBuyIndex + generatorString + associatedGenerator.generatorName;
+        //upgradeCostText.text = "Cost : " + System.Math.Round(multiBuyCost, 2) + " λ" + "\nfor " + multiBuyIndex + generatorString + associatedGenerator.generatorName;
 
         //incomeText.text
-        incomeText.text = associatedGenerator.currentIncome*manager.prestigeBonus /associatedGenerator.generatorRate + " λ/s";
+        incomeText.text = associatedGenerator.baseIncome * associatedGenerator.generatorQuantity * manager.prestigeBonus + " λ";
         #endregion
 
         Ownership();
@@ -212,13 +217,17 @@ public class GeneratorUIManager : MonoBehaviour
         }
     }
 
+    
     private void Ownership()
     {
-        if(associatedGenerator.generatorQuantity >= associatedGenerator.ownershipStep)
+        levelFillBar.fillAmount = (associatedGenerator.generatorQuantity - previousOwnershipStep) / (associatedGenerator.ownershipStep - previousOwnershipStep);
+        if (associatedGenerator.generatorQuantity >= associatedGenerator.ownershipStep)
         {
+            previousOwnershipStep = associatedGenerator.ownershipStep;
             multiplierParticles.Play();
             associatedGenerator.ownershipBonus *= 2;
             associatedGenerator.ownershipStep *= 2;
+            levelFillBar.fillAmount = 0;
         }
     }
 

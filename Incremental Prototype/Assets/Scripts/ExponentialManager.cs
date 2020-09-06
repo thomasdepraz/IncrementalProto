@@ -44,7 +44,7 @@ public class ExponentialManager : MonoBehaviour
         {
 
 
-            prestigeBoostText.text = "x" +  currentPrestigeBonus + "\nmultiplier";
+            //prestigeBoostText.text = "x" +  currentPrestigeBonus + "\nmultiplier";
         }
 
         PrestigeCalculation();
