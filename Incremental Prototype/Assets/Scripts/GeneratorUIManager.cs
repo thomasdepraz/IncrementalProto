@@ -101,7 +101,7 @@ public class GeneratorUIManager : MonoBehaviour
         }
 
         //max buy toggle
-        /*if(manager.maxBuyToggle.isOn)
+        if(manager.maxBuyToggle.isOn)
         {
             associatedGenerator.maxBuy = true;
         }
@@ -109,7 +109,7 @@ public class GeneratorUIManager : MonoBehaviour
         {
             associatedGenerator.maxBuy = false;
             multiBuyIndex = 1;
-        }*/
+        }
         
         //unlockautoclick button
         if(index == manager.currentGeneratorIndex)
