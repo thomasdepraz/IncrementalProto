@@ -21,6 +21,7 @@ public class GeneratorUIManager : MonoBehaviour
     public ParticleSystem multiplierParticles;
     public Mask mask;
     public int index;
+    public ParticleSystem onHitUpgrade;
 
     private string generatorString = " generator ";
 
@@ -180,6 +181,7 @@ public class GeneratorUIManager : MonoBehaviour
         {
             manager.currency -= multiBuyCost;
             associatedGenerator.generatorQuantity += multiBuyIndex;
+            onHitUpgrade.Play();
         }
     }
 
@@ -208,7 +210,7 @@ public class GeneratorUIManager : MonoBehaviour
         //play particle
 
         //disable button
-        unlockAutoclick.gameObject.SetActive(false);
+        unlockAutoclick.transform.parent.gameObject.SetActive(false);
 
         // si pas en train de générer : générer
         if(canStartCoroutine)
