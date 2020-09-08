@@ -22,6 +22,7 @@ public class GeneratorUIManager : MonoBehaviour
     public Mask mask;
     public int index;
     public ParticleSystem onHitUpgrade;
+    public ParticleSystem autoclickUnlockParticles;
 
     private string generatorString = " generator ";
 
@@ -206,11 +207,12 @@ public class GeneratorUIManager : MonoBehaviour
         associatedGenerator.autoBuy = true;
         manager.currency -= associatedGenerator.autoclickUnlockCost;
 
-        
-        //play particle
 
-        //disable button
-        unlockAutoclick.transform.parent.gameObject.SetActive(false);
+        //play particle + disable
+
+        StartCoroutine(UnlockAutoclickParticle());
+        
+        
 
         // si pas en train de générer : générer
         if(canStartCoroutine)
@@ -249,6 +251,16 @@ public class GeneratorUIManager : MonoBehaviour
         {
             Generate();
         }
+    }
+
+    private IEnumerator UnlockAutoclickParticle()
+    {
+        //play particle
+        autoclickUnlockParticles.Play();
+        yield return new WaitUntil(() => autoclickUnlockParticles.isPlaying == false);
+        
+        //disable button
+        unlockAutoclick.transform.parent.gameObject.SetActive(false);
     }
 
 
