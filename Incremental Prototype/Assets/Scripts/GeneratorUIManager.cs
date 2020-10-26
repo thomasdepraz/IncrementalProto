@@ -37,10 +37,6 @@ public class GeneratorUIManager : MonoBehaviour
 
     private void Start()
     {
-        if(index != manager.currentGeneratorIndex)
-        {
-            unlockAutoclick.gameObject.SetActive(false);
-        }
         previousOwnershipStep = 0;
     }
 
@@ -59,8 +55,8 @@ public class GeneratorUIManager : MonoBehaviour
             }
         }
 
-        autoClickUnlockBar.fillAmount = manager.currency / associatedGenerator.autoclickUnlockCost;
-        costBar.fillAmount = manager.currency / multiBuyCost;
+        autoClickUnlockBar.fillAmount = (float)manager.currency / associatedGenerator.autoclickUnlockCost;
+        costBar.fillAmount = (float)manager.currency / multiBuyCost;
         #endregion
 
         #region CostCalculation
@@ -75,31 +71,26 @@ public class GeneratorUIManager : MonoBehaviour
         #endregion
 
         #region ButtonManagement
-        //generate button management
-        if(index == manager.currentGeneratorIndex)
+        //generate button management       
+        if(!canStartCoroutine || associatedGenerator.generatorQuantity == 0)
         {
-            if(!canStartCoroutine || associatedGenerator.generatorQuantity == 0)
-            {
-                generateButton.interactable = false;
-            }
-
-            else if(canStartCoroutine && associatedGenerator.generatorQuantity != 0)
-            {
-                generateButton.interactable = true;
-            }
+            generateButton.interactable = false;
         }
 
-        //upgrade button management
-        if(index == manager.currentGeneratorIndex)
+        else if(canStartCoroutine && associatedGenerator.generatorQuantity != 0)
         {
-            if(manager.currency >= multiBuyCost)
-            {
-                upgradeButton.interactable = true;
-            }
-            else
-            {
-                upgradeButton.interactable = false;
-            }
+            generateButton.interactable = true;
+        }
+        
+
+        //upgrade button management
+        if(manager.currency >= multiBuyCost)
+        {
+            upgradeButton.interactable = true;
+        }
+        else
+        {
+            upgradeButton.interactable = false;
         }
 
         //max buy toggle
@@ -114,26 +105,15 @@ public class GeneratorUIManager : MonoBehaviour
         }
         
         //unlockautoclick button
-        if(index == manager.currentGeneratorIndex)
+        if(manager.currency >= associatedGenerator.autoclickUnlockCost)
         {
-            if(associatedGenerator.autoBuy != true)
-            {
-                unlockAutoclick.gameObject.SetActive(true);
-            }
-
-            if(manager.currency >= associatedGenerator.autoclickUnlockCost)
-            {
-                unlockAutoclick.interactable = true;
-            }
-            else
-            {
-                unlockAutoclick.interactable = false;
-            }
+            unlockAutoclick.interactable = true;
         }
         else
         {
-            unlockAutoclick.gameObject.SetActive(false);
+            unlockAutoclick.interactable = false;
         }
+
         #endregion
 
         #region TextManagement
@@ -189,7 +169,7 @@ public class GeneratorUIManager : MonoBehaviour
     public void MaxBuy()
     {
         //maxBuy Calculation
-        maxBuyIndex = Mathf.Floor(Mathf.Log(Mathf.Pow(associatedGenerator.costMultiplier, associatedGenerator.generatorQuantity) - ((manager.currency * (1 - associatedGenerator.costMultiplier)) / associatedGenerator.startingCost), associatedGenerator.costMultiplier) - associatedGenerator.generatorQuantity);
+        maxBuyIndex = Mathf.Floor(Mathf.Log((float)(Mathf.Pow(associatedGenerator.costMultiplier, associatedGenerator.generatorQuantity) - ((manager.currency * (1 - associatedGenerator.costMultiplier)) / associatedGenerator.startingCost)), associatedGenerator.costMultiplier) - associatedGenerator.generatorQuantity);
 
         if (maxBuyIndex > 0)
         {

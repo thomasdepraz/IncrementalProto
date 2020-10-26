@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Unity.Mathematics;
 
 public class ExponentialManager : MonoBehaviour
 {
     //Variables
-    public float currency = 0;
+    public double currency = 0;
+    private double alltimeCurrency = 0;
 
     public float prestigeBonus;
     private float currentPrestigeBonus;
 
     public List<Generator> generators;
     public List<GeneratorUIManager> uiManagers;
-    public int currentGeneratorIndex;
 
     //Text
     public TextMeshProUGUI currencyText;
@@ -30,8 +31,9 @@ public class ExponentialManager : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log(math.floor(currency / math.pow(10, 12)));
         //initialyze generators currentcost
-        for(int i = 0; i < generators.Count; i++)
+        for (int i = 0; i < generators.Count; i++)
         {
             generators[i].currentCost = generators[i].startingCost;
         }
@@ -39,16 +41,14 @@ public class ExponentialManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        currencyText.text = "Currency : \n" + System.Math.Round(currency, 2) + " λ";
+        currencyText.text = "Currency : \n" + SciFormat(currency) + " λ";
         if(currentPrestigeBonus != 0)
         {
-
-
             //prestigeBoostText.text = "x" +  currentPrestigeBonus + "\nmultiplier";
+
         }
 
         PrestigeCalculation();
-
     }
 
     public void Prestige()
@@ -64,49 +64,15 @@ public class ExponentialManager : MonoBehaviour
         }
     }
 
-    private void PrestigeCalculation()
+    private float PrestigeCalculation()
     {
-        currentPrestigeBonus = 0;
-        for (int i = 0; i < generators.Count; i++)
-        {
-            currentPrestigeBonus += (0.01f * generators[i].generatorQuantity);
-        }
-        currentPrestigeBonus += 1;
+        currentPrestigeBonus = (float)math.floor(currency / math.pow(10, 12)) * 0.02f; //replace currency by all time currency
+        return currentPrestigeBonus;
     }
 
-    public void NextGenerator()
+    public string SciFormat(double num)
     {
-        if(currentGeneratorIndex + 1 < uiManagers.Count)
-        {
-            //disable current
-            uiManagers[currentGeneratorIndex].mask.enabled = true;
-
-            //enable next
-            uiManagers[currentGeneratorIndex + 1].mask.enabled = false;
-            currentGeneratorIndex++;
-        }
+        return num.ToString("0.00E+0");
     }
 
-    public void PreviousGenerator()
-    {
-        if (currentGeneratorIndex >= 1)
-        {
-            //disable current
-            uiManagers[currentGeneratorIndex].mask.enabled = true;
-
-            //enable previous
-            uiManagers[currentGeneratorIndex - 1].mask.enabled = false;
-            currentGeneratorIndex--;
-        }
-    }
-
-    public void Generate()
-    {
-        uiManagers[currentGeneratorIndex].Generate();
-    }
-
-    public void Upgrade()
-    {
-        uiManagers[currentGeneratorIndex].MultiBuy();
-    }
 }
